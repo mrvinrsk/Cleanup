@@ -3,12 +3,12 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Cleanup" WindowStyle="None" AllowsTransparency="True"
+        xmlns:local="clr-namespace:Cleanup"
         mc:Ignorable="d"
-        Title="Cleanup" MinHeight="450" MinWidth="550" Height="450" Width="800" MaxWidth="1200" MaxHeight="600" FontFamily="Lato" HorizontalAlignment="Center" VerticalAlignment="Center" Icon="/favicon.png">
+        Title="Cleanup" MinHeight="450" MinWidth="550" Height="450" Width="1000" FontFamily="Lato" HorizontalAlignment="Center" VerticalAlignment="Center" Icon="/favicon.png">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="5*"/>
+            <ColumnDefinition Width="2*"/>
             <ColumnDefinition Width="3*" MaxWidth="600"/>
         </Grid.ColumnDefinitions>
 
@@ -21,21 +21,21 @@
             <Rectangle Grid.Column="0" Fill="#37abba" Height="48" VerticalAlignment="Top"/>
             <Label Grid.Column="0" Content="Configure" HorizontalAlignment="Left" VerticalAlignment="Top" FontFamily="Lato" FontWeight="Bold" FontSize="16" Margin="16,10,0,0" Foreground="White"/>
 
-            <CheckBox Grid.Column="0" x:Name="downloads" Content="Downloads" HorizontalAlignment="Left" Margin="20,66,0,0" VerticalAlignment="Top" FontFamily="Lato" RenderTransformOrigin="2.215,5.479" FontSize="14" IsChecked="False" Height="15"/>
-            <CheckBox Grid.Column="0" x:Name="tempfiles" Content="Temporary Files" HorizontalAlignment="Left" Margin="20,86,0,0" VerticalAlignment="Top" FontFamily="Lato" RenderTransformOrigin="2.215,5.479" FontSize="14" IsChecked="False" Height="15"/>
+            <CheckBox Click="UpdateSummary" Grid.Column="0" x:Name="downloads" Content="Downloads" HorizontalAlignment="Left" Margin="20,66,0,0" VerticalAlignment="Top" FontFamily="Lato" RenderTransformOrigin="2.215,5.479" FontSize="14" IsChecked="False" Height="15"/>
+            <CheckBox Click="UpdateSummary" Grid.Column="0" x:Name="tempfiles" Content="Temporary Files" HorizontalAlignment="Left" Margin="20,86,0,0" VerticalAlignment="Top" FontFamily="Lato" RenderTransformOrigin="2.215,5.479" FontSize="14" IsChecked="False" Height="15"/>
 
             <Button Padding="20,7,20,7" Content="Clean" Margin="20,0,0,20" Background="#FF37ABBA" BorderThickness="0,0,0,0" Foreground="White" HorizontalAlignment="Left" Width="70" Height="30" VerticalAlignment="Bottom" FontFamily="Lato" FontWeight="Bold" Click="Button_Click"/>
         </Grid>
 
         <Grid Grid.Column="1">
             <Grid.RowDefinitions>
-                <RowDefinition Height="5*"/>
+                <RowDefinition Height="3*"/>
                 <RowDefinition Height="2*"/>
             </Grid.RowDefinitions>
 
             <Grid Grid.Row="0">
                 <Rectangle Fill="#f5f5f5"/>
-                <RichTextBox Padding="10" x:Name="summary" FontFamily="Lato" IsReadOnly="True" BorderBrush="Transparent">
+                <RichTextBox Padding="10" MinHeight="150" x:Name="summary" FontFamily="Lato" IsReadOnly="True" BorderBrush="Transparent">
                     <FlowDocument>
                     </FlowDocument>
                 </RichTextBox>
@@ -51,7 +51,6 @@
         <Grid Grid.Row="1" Grid.ColumnSpan="2" x:Name="dragbar">
             <Rectangle Fill="#bfbfbf"/>
             <Label Content="Cleanup by Marvin Roßkothen" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="16,0,0,0"/>
-            <Button x:Name="exitbtn" Content="Exit" HorizontalAlignment="Right" VerticalAlignment="Center" Padding="10,5,10,5" Margin="0,0,20,0" Click="exitbtn_Click" />
         </Grid>
     </Grid>
 </Window>

@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.IO;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -24,21 +25,79 @@ namespace Cleanup
         // Clean Button
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+            long total_deleted = 0;
             List<string> clean_paths = new List<string>();
 
-            // check if downloads is checked
-            if (downloads.IsChecked == true)
+            if (downloads.IsChecked == true) clean_paths.Add(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Downloads");
+            if (tempfiles.IsChecked == true) clean_paths.Add(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Temp");
+
+            PrintTextToLog(String.Format("Cleaning {0} {1}...", clean_paths.Count, clean_paths.Count != 1 ? "paths" : "path"));
+
+
+            foreach (string path in clean_paths)
             {
-                clean_paths.Add(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Downloads");
+                // get how many storage is used by path
+                long storage_used = 0;
+
+                // loop through all files in path
+                foreach (string file in Directory.GetFiles(path))
+                {
+                    storage_used += new FileInfo(file).Length;
+                    if (IsFileDeletable(file))
+                        total_deleted += new FileInfo(file).Length;
+                    else PrintTextToLog(String.Format("Can not delete {0}", file));
+                }
+
+                if (storage_used == total_deleted) PrintTextToLog(String.Format("Freed {0} of space.", ConvertBytesToReadableSize(storage_used)));
+                else PrintTextToLog(String.Format("Freed {0} of space, with a total of {1} of checked files.", ConvertBytesToReadableSize(total_deleted), ConvertBytesToReadableSize(storage_used)));
+            }
+        }
+
+        public void UpdateSummary(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private bool IsFileDeletable(string filePath)
+        {
+            if (!File.Exists(filePath))
+            {
+                return false;
             }
 
-            // check if tempfiles is checked
-            if (tempfiles.IsChecked == true)
+            FileStream stream = null;
+
+            try
             {
-                clean_paths.Add(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Temp");
+                // Versuche, die Datei mit exklusivem Zugriff zu öffnen
+                stream = File.Open(filePath, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
+                return true;
+            }
+            catch (IOException)
+            {
+                // Ein IOException bedeutet, dass die Datei in Gebrauch ist oder ein anderer Fehler aufgetreten ist
+                return false;
+            }
+            finally
+            {
+                if (stream != null)
+                    stream.Close();
+            }
+        }
+
+        private string ConvertBytesToReadableSize(long bytes)
+        {
+            string[] sizes = { "Bytes", "KB", "MB", "GB", "TB", "PB", "EB" };
+            double formattedSize = bytes;
+            int sizeIndex = 0;
+
+            while (formattedSize >= 1024 && sizeIndex < sizes.Length - 1)
+            {
+                formattedSize /= 1024;
+                sizeIndex++;
             }
 
-            PrintTextToLog(String.Format("Selected {0} paths: {1}", clean_paths.Count, String.Join(", ", clean_paths)));
+            return string.Format("{0:0.##} {1}", formattedSize, sizes[sizeIndex]);
         }
 
         private void UpdateSummary(List<string> paths)
@@ -69,17 +128,6 @@ namespace Cleanup
 
             // Scroll to bottom
             log.ScrollToEnd();
-        }
-
-        private void exitbtn_Click(object sender, RoutedEventArgs e)
-        {
-            Application.Current.Shutdown();
-        }
-
-        // On Drag of "dragbar" move window
-        private void dragbar_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            this.DragMove();
         }
 
     }
