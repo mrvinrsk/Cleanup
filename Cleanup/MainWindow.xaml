@@ -24,7 +24,7 @@
             <CheckBox Click="UpdateSummary" Grid.Column="0" x:Name="downloads" Content="Downloads" HorizontalAlignment="Left" Margin="20,66,0,0" VerticalAlignment="Top" FontFamily="Lato" RenderTransformOrigin="2.215,5.479" FontSize="14" IsChecked="False" Height="15"/>
             <CheckBox Click="UpdateSummary" Grid.Column="0" x:Name="tempfiles" Content="Temporary Files" HorizontalAlignment="Left" Margin="20,86,0,0" VerticalAlignment="Top" FontFamily="Lato" RenderTransformOrigin="2.215,5.479" FontSize="14" IsChecked="False" Height="15"/>
 
-            <Button Padding="20,7,20,7" Content="Clean" Margin="20,0,0,20" Background="#FF37ABBA" BorderThickness="0,0,0,0" Foreground="White" HorizontalAlignment="Left" Width="70" Height="30" VerticalAlignment="Bottom" FontFamily="Lato" FontWeight="Bold" Click="Button_Click"/>
+            <Button Padding="20,7,20,7" Content="Clean" Margin="20,0,0,20" Background="#FF37ABBA" BorderThickness="0,0,0,0" Foreground="White" HorizontalAlignment="Left" VerticalAlignment="Bottom" FontFamily="Lato" FontWeight="Bold" Click="Button_Click"/>
         </Grid>
 
         <Grid Grid.Column="1">

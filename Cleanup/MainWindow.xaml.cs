@@ -25,6 +25,12 @@ namespace Cleanup
         // Clean Button
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+            new CleanWarning().Show();
+        }
+
+        private void StartCleaning()
+        {
+            long total_found = 0;
             long total_deleted = 0;
             List<string> clean_paths = new List<string>();
 
@@ -33,24 +39,36 @@ namespace Cleanup
 
             PrintTextToLog(String.Format("Cleaning {0} {1}...", clean_paths.Count, clean_paths.Count != 1 ? "paths" : "path"));
 
-
+            bool br = true;
+            string last_drive = "c";
             foreach (string path in clean_paths)
             {
                 // get how many storage is used by path
-                long storage_used = 0;
+                long local_found = 0;
+                long local_deleted = 0;
 
                 // loop through all files in path
                 foreach (string file in Directory.GetFiles(path))
                 {
-                    storage_used += new FileInfo(file).Length;
+                    local_found += new FileInfo(file).Length;
+                    total_found += new FileInfo(file).Length;
+
                     if (IsFileDeletable(file))
+                    {
+                        local_deleted += new FileInfo(file).Length;
                         total_deleted += new FileInfo(file).Length;
-                    else PrintTextToLog(String.Format("Can not delete {0}", file));
+                    }
                 }
 
-                if (storage_used == total_deleted) PrintTextToLog(String.Format("Freed {0} of space.", ConvertBytesToReadableSize(storage_used)));
-                else PrintTextToLog(String.Format("Freed {0} of space, with a total of {1} of checked files.", ConvertBytesToReadableSize(total_deleted), ConvertBytesToReadableSize(storage_used)));
+                if (last_drive.ToLower() != path.Substring(0, 1).ToLower()) br = true;
+
+                long local_deleted_percentage = (local_deleted * 100) / local_found;
+                PrintTextToLog(String.Format("Cleaned up {0} of space at {1} (which is {2}% of the directory)", ConvertBytesToReadableSize(local_deleted), path, local_deleted_percentage), br);
+                br = false;
             }
+
+            long deleted_percentage = (total_deleted * 100) / total_found;
+            PrintTextToLog(String.Format("Finished! Freed {0} ({1}) of space, with a total of {2} of checked files.", ConvertBytesToReadableSize(total_deleted), deleted_percentage + "%", ConvertBytesToReadableSize(total_found)), true);
         }
 
         public void UpdateSummary(object sender, RoutedEventArgs e)
@@ -110,19 +128,32 @@ namespace Cleanup
         }
 
         // print text to log
-        private void PrintTextToLog(string text)
+        private void PrintTextToLog(string text, bool begin_new_block = false)
         {
             // Add paragraph
             Paragraph paragraph = new Paragraph();
-            paragraph.Inlines.Add(new Run(text));
+            Run r = new Run(text);
+            paragraph.Inlines.Add(r);
             paragraph.FontSize = 14;
             paragraph.LineHeight = 18;
             paragraph.Margin = new Thickness(0, 0, 0, 0);
 
             // Add paragraph to document
             FlowDocument flowDocument = log.Document as FlowDocument;
+
             if (flowDocument != null)
             {
+                if (begin_new_block)
+                {
+                    Paragraph empty = new Paragraph();
+                    empty.Inlines.Add(new Run(""));
+                    empty.FontSize = 2;
+                    empty.LineHeight = 2;
+
+                    flowDocument.Blocks.Add(empty);
+
+                }
+
                 flowDocument.Blocks.Add(paragraph);
             }
 
